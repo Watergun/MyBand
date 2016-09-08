@@ -1,2 +1,2 @@
 # MyBand
-Band App
+Band App for Band
