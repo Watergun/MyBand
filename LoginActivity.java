@@ -337,7 +337,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
             }
 
-            // cTODO: register the new account here.
+            // dTODO: register the new account here.
             return true;
         }
 
