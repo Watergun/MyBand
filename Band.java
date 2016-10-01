@@ -12,4 +12,6 @@ public class Band {
     private Image picture;
     private Setlist[] setlists;
     private Song[] songs;
+    private float transactionSum;
+    private Transaction[] transactions;
 }
