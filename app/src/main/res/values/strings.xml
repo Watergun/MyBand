@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">My Band</string>
+
+    <string name="local_toggle">registered</string>
+    <string name="local_key">username</string>
+
+    <string name="navigation_drawer_open">Navigationsfenster öffnen</string>
+    <string name="navigation_drawer_close">Navigationsfenster schließen</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_login">Einloggen</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email Adresse</string>
+    <string name="prompt_password">Passwort</string>
+    <string name="prompt_name">Name</string>
+    <string name="action_sign_in">Anmelden</string>
+    <string name="action_register">Registrieren</string>
+    <string name="action_sign_in_short">Anmelden</string>
+    <string name="action_switch_to_register">Noch keinen Account?</string>
+    <string name="action_switch_to_login">Bereits einen Account?</string>
+    <string name="error_invalid_email">Email Adresse ist ungültig</string>
+    <string name="error_invalid_password">Passwort zu kurz</string>
+    <string name="error_incorrect_password">Password ist falsch</string>
+    <string name="error_field_required">Pflichtfeld</string>
+    <string name="permission_rationale">"Die Email-Autocompletion benötigt Zugriffsrechte auf
+        Handykontakte.>
+    </string>
+
+    <!-- Server connection information -->
+    <string name="servername">mb-serve.esy.es</string>
+
+    <!-- Title bar strings for all activities -->
+    <string name="title_fragment_login">Einloggen</string>
+    <string name="title_fragment_registration">Einloggen</string>
+    <string name="title_fragment_news">Neuigkeiten</string>
+    <string name="title_fragment_finances">Finanzen</string>
+    <string name="title_fragment_calendar">Eventkalender</string>
+    <string name="title_fragment_music">Songs</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="text_news_no_content"><i>Keine Neuigkeiten bisher</i></string>
+    <string name="text_calendar_no_content"><i>Keine Events bisher</i></string>
+    <string name="text_finances_no_content"><i>Keine Transaktionen bisher</i></string>
+    <string name="text_music_no_content"><i>Keine Songs bisher</i></string>
+
+    <string name="text_no_band"><i>Keine Band ausgewählt</i></string>
+
+</resources>
