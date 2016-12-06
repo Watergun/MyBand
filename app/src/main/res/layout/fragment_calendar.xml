@@ -9,10 +9,15 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <CalendarView
-            android:layout_width="match_parent"
+        <include
+            layout="@layout/calendar_layout"
             android:layout_height="wrap_content"
-            android:id="@+id/calendarWidget" />
+            android:layout_width="match_parent"/>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/event_list_view"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -20,8 +25,9 @@
             android:text="@string/text_no_band"
             android:textSize="20sp"
             android:textStyle="normal|italic"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:visibility="gone"
+            android:id="@+id/calendarTextViewNoContent"/>
 
     </LinearLayout>
-
 </FrameLayout>

@@ -19,24 +19,27 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             android:minHeight="116dp"
-            app:title="MyBand" />
+            app:title="My Band">
+
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/plusButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="50dp"
-        android:src="@android:drawable/ic_input_add"
-        android:clickable="true"
-        android:minHeight="@dimen/abc_action_bar_progress_bar_size"
-        android:tint="@color/foreground_material_dark">
-    </android.support.design.widget.FloatingActionButton>
-
     <include layout="@layout/content_home"/>
 
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@android:drawable/ic_input_add"
+        android:id="@+id/imageButton"
+        android:layout_weight="1"
+        android:tint="@color/colorAccent"
+        android:background="@android:color/background_light"
+        app:layout_anchorGravity="top|right"
+        android:layout_gravity="top|right"
+        android:layout_marginTop="70dp"
+        android:layout_marginRight="20dp"
+        style="@android:style/Widget.Holo.ImageButton"
+        android:adjustViewBounds="false" />
 
 </android.support.design.widget.CoordinatorLayout>

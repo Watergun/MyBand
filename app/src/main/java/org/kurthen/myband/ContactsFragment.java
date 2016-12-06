@@ -9,34 +9,35 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CalendarView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import org.kurthen.myband.R;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link CalendarFragment.OnCalendarInteraction} interface
+ * {@link ContactsFragment.OnContactsInteraction} interface
  * to handle interaction events.
- * Use the {@link CalendarFragment#newInstance} factory method to
+ * Use the {@link ContactsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CalendarFragment extends Fragment {
+public class ContactsFragment extends Fragment {
 
     private View mFragmentRoot;
 
-    private OnCalendarInteraction mListener;
+    private OnContactsInteraction mListener;
 
-    private ListView mEventListView;
-    private EventListAdapter mEventAdapter;
+    private ListView mSongListView;
+    private ContactListAdapter mContactAdapter;
 
-    public CalendarFragment() {
+
+    public ContactsFragment() {
         // Required empty public constructor
     }
 
@@ -44,81 +45,56 @@ public class CalendarFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment CalendarFragment.
+     * @return A new instance of fragment MusicFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CalendarFragment newInstance() {
-        CalendarFragment fragment = new CalendarFragment();
+    public static ContactsFragment newInstance() {
+        ContactsFragment fragment = new ContactsFragment();
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mEventAdapter = new EventListAdapter(getContext(), new Vector<Event>());
+        mContactAdapter = new ContactListAdapter(getContext(), new Vector<Contact>());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mFragmentRoot = inflater.inflate(R.layout.fragment_calendar, container, false);
-        mEventListView = (ListView) mFragmentRoot.findViewById(R.id.event_list_view);
-        mEventListView.setAdapter(mEventAdapter);
+        mFragmentRoot = inflater.inflate(R.layout.fragment_music, container, false);
+
+        mSongListView = (ListView) mFragmentRoot.findViewById(R.id.song_list_view);
+        mSongListView.setAdapter(mContactAdapter);
 
         Band currentBand = CurrentProfile.getInstance().getSelectedBand();
         if(currentBand == null){
-            mFragmentRoot.findViewById(R.id.calendarTextViewNoContent).setVisibility(View.VISIBLE);
+            mFragmentRoot.findViewById(R.id.musicTextViewNoContent).setVisibility(View.VISIBLE);
         }
         else{
-            refreshList(currentBand.getEvents());
+            refreshList(currentBand.getSongs());
         }
 
-        initializeCalendar(mFragmentRoot);
         return mFragmentRoot;
     }
 
-    public void initializeCalendar(View root){
-        CalendarView calendar = (CalendarView) root.findViewById(R.id.calendar_view);
-
-        calendar.setFirstDayOfWeek(2);
-        calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                selectDay(year, month, dayOfMonth);
-            }
-        });
-    }
-
-    public void refreshList(Event[] newEvents){
-        if(newEvents == null || mEventAdapter == null){
+    public void refreshList(Contact[] newSongs){
+        if(newSongs == null ||mContactAdapter == null){
             return;
         }
-        else if(newEvents.length == 0){
-            TextView t = (TextView) mFragmentRoot.findViewById(R.id.calendarTextViewNoContent);
+        else if(newSongs.length == 0){
+            TextView t = (TextView) mFragmentRoot.findViewById(R.id.musicTextViewNoContent);
             t.setVisibility(View.VISIBLE);
-            t.setText(R.string.text_calendar_no_content);
+            t.setText(R.string.text_music_no_content);
         }
 
-        // Convert the array into a dynamic list
-        ListIterator<Event> it = Arrays.asList(newEvents).listIterator();
-
-        int lastUpdateNumber = 0;
-        if(!mEventAdapter.isEmpty())
-            mEventAdapter.getItem(mEventAdapter.getCount()-1).getNotficationCounter();
+        ListIterator<Contact> it = Arrays.asList(newSongs).listIterator();
 
         while(it.hasNext()){
-            Event e = it.next();
-            if(e.getNotficationCounter() > lastUpdateNumber)
-                mEventAdapter.add(e);
+            Contact c = it.next();
+            mContactAdapter.add(c);
         }
-    }
-
-    /* Selects a day by scrolling the event list to the specified date.
-     */
-    public void selectDay(int year, int month, int day){
-
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -131,11 +107,11 @@ public class CalendarFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnCalendarInteraction) {
-            mListener = (OnCalendarInteraction) context;
+        if (context instanceof OnMusicInteraction) {
+            mListener = (OnMusicInteraction) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnCalendarInteraction");
+                    + " must implement OnMusicInteraction");
         }
     }
 
@@ -155,28 +131,28 @@ public class CalendarFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnCalendarInteraction {
+    public interface OnContactsInteraction {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
-    public class EventListAdapter extends ArrayAdapter<Event>{
-        public EventListAdapter(Context context, List<Event> elements){
-            super(context, R.layout.event_list_item, elements);
+    public class ContactListAdapter extends ArrayAdapter<Contact> {
+        public ContactListAdapter(Context context, List<Contact> elements){
+            super(context, R.layout.song_list_item, elements);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
-            Event e = getItem(position);
+            Contact c = getItem(position);
 
             if(convertView == null){
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.event_list_item, parent);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.song_list_item, parent);
             }
 
             TextView title = (TextView) convertView.findViewById(R.id.list_item_title);
             TextView content = (TextView) convertView.findViewById(R.id.list_item_content);
-            title.setText(e.getTitle());
-            title.setText(e.getLocation());
+            title.setText(s.getTitle());
+            title.setText(s.getAlbum());
 
             return convertView;
         }

@@ -1,5 +1,7 @@
 package org.kurthen.myband;
 
+import android.text.TextUtils;
+
 /**
  * Created by Leonhard on 16.09.2016.
  */
@@ -25,15 +27,8 @@ public class DataObjectManager {
         return new Event();
     }
 
-    public Song createSong(String title){
-        return new Song();
-    }
-
-    public Setlist createSetlist(String title){
-        return new Setlist();
-    }
-
     public Transaction createTransaction(String title){
         return new Transaction();
     }
+
 }

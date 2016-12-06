@@ -1,6 +1,16 @@
 package org.kurthen.myband;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
+import android.util.Base64;
 import android.util.Log;
 
 import java.io.BufferedOutputStream;
@@ -17,32 +27,49 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.text.ParseException;
+
 import android.text.TextUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
 
 /**
  * Created by Leonhard on 15.09.2016.
  */
 public class DatabaseConnection{
-    private URL mServerUrl;
     private HttpURLConnection mHttpConnection;
+    private Context mContext;
+    private SynchronizingService mService;
+
+    private boolean mBound = false;
 
     /* This class is a Singleton */
     private static DatabaseConnection instance = new DatabaseConnection();
     public static DatabaseConnection getInstance() {return instance; }
 
-    private DatabaseConnection(){
+    public DatabaseConnection(){
     }
 
-    public String postRegistration(User newUser){
+    public void setContext(Context c){
+        mContext = c;
+    }
 
-        String appendix = "name=" + newUser.getFirstName() +
-                "&email=" + newUser.getEmail() +
-                "&pw=" + newUser.getPassword();
+    public String postRegistration(String name, String email, String pass){
 
-        Log.d("POST", appendix);
+        String appendix = "name=" + name +
+                "&email=" + email +
+                "&pw=" + pass;
 
-        PostData request = new PostData();
-        String status = request.doInBackground("registration.php", appendix);
+        Intent syncService = new Intent(mContext, SynchronizingService.class);
+        mContext.bindService(syncService, mServiceConn, Context.BIND_IMPORTANT);
+        if(mBound){
+            Handler h = new Handler();
+
+        }
+
+        String status = NetworkAccess.performPostRequest("registration.php", appendix);
 
         //DEBUG
         Log.d("RESULT", status);
@@ -50,10 +77,8 @@ public class DatabaseConnection{
         return status;
     }
 
-    public String checkUserCredentials(String email, String password){
-        String appendix = "email=" + email + "&pw=" + password;
-
-        Log.d("POST", appendix);
+    public String checkUserCredentials(String email, String pass){
+        String appendix = "email=" + email + "&pw=" + pass;
 
         PostData request = new PostData();
         String answer = request.doInBackground("log_user.php", appendix);
@@ -63,126 +88,48 @@ public class DatabaseConnection{
         return answer;
     }
 
+    public void addBand(Band band){
+
+    }
+
+    public void addUpdate(Update update){
+
+    }
+
+    public void addEvent(Event event){
+
+    }
+
+    public void addTransaction(Transaction transaction){
+
+    }
+
+    public void addSong(Song song){
+
+    }
+
     /*
      * Receive all user data from the online database by a user key being saved
      * in the CurrentProfile class.
-     * Important is: email and password
      *
      */
-    public void receiveCurrentUserInformation(){
-        User userKey = CurrentProfile.getInstance().getUser();
-        String auth = "email=" + userKey.getEmail() + "&pw=" + userKey.getPassword();
+    public void fetchUserData(){
 
-        //GetData request = new GetData();
-
-        //First step is to fill the user information
-        String appendix = auth + "&obj=User&objid";
-
-        //String answer = request.doInBackground("receive_userdata.php");
     }
 
-    private class GetData extends AsyncTask<String, Void, String>{
+    private ServiceConnection mServiceConn = new ServiceConnection() {
         @Override
-        /*
-         * General method to make a GET request
-         *      -> string parameter: full URL appendix
-         *
-         */
-        protected String doInBackground(String... strings){
-            if(strings.length < 1 || strings.length > 2)
-                return "GET request could not be done.";
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            SynchronizingService.ActiveSynchronization binder =
+                    (SynchronizingService.ActiveSynchronization) service;
+            mService = ((SynchronizingService.ActiveSynchronization) service).getService();
+            mBound = true;
+        }
 
-            String response = "";
-
-            //Establish HTTP connection
-            try {
-                mServerUrl = new URL("http://www.mb-serve.esy.es/".concat(strings[0]));
-                ////mServerUrl = new URL("http://requestb.in/16ury2w1");
-                mHttpConnection = (HttpURLConnection) mServerUrl.openConnection();
-                mHttpConnection.setRequestMethod("GET");
-
-                mHttpConnection.setRequestProperty("Content-Type",
-                        "application/x-www-form-urlencoded");
-
-                int code = mHttpConnection.getResponseCode();
-                Log.d("CODE", Integer.toString(code));
-
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                                            mHttpConnection.getInputStream()));
-                String inputLine = "";
-                while((inputLine = in.readLine()) != null) {
-                    response += inputLine;
-                    Log.d("RESPONSE", inputLine);
-                }
-
-                //mHttpConnection.disconnect();
-                return response;
-            }
-            catch(MalformedURLException e){
-                response =  "Failed to build URL. ".concat(e.getMessage());
-            }
-            catch(IOException e){
-                response =  "Failed to reach server. ".concat(e.getMessage());
-            }
-            finally {
-                return response;
-            }
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mBound = false;
         }
     }
 
-    private class PostData extends AsyncTask<String, Void, String>{
-        @Override
-        /*
-         * Parameter: Strings... strings
-         * Array of strings, where:
-         *      -> first String defining which serverscript is being called
-         *      -> second string is preformatted parameters
-         */
-        protected String doInBackground(String... strings){
-            //A POST request without further parameters makes no sense
-            if(strings.length != 2)
-                return "POST request could not be done.";
-
-            String response = "";
-
-            //Establish HTTP connection
-            try {
-                mServerUrl = new URL("http://www.mb-serve.esy.es/".concat(strings[0]));
-                //mServerUrl = new URL("http://requestb.in/16ury2w1");
-                mHttpConnection = (HttpURLConnection) mServerUrl.openConnection();
-                mHttpConnection.setRequestMethod("POST");
-                mHttpConnection.setDoOutput(true);
-
-                byte[]out = strings[1].getBytes("UTF-8");
-                mHttpConnection.setRequestProperty("Content-Type",
-                        "application/x-www-form-urlencoded");
-                mHttpConnection.setRequestProperty("Content-Length", Integer.toString(out.length));
-                //mHttpConnection.setFixedLengthStreamingMode(out.length);
-                DataOutputStream dataOut = new DataOutputStream(mHttpConnection.getOutputStream());
-                dataOut.write(out);
-                dataOut.flush();
-                dataOut.close();
-                BufferedReader r = new BufferedReader(new InputStreamReader(mHttpConnection.getInputStream()));
-
-                String inputLine = "";
-                while((inputLine = r.readLine()) != null) {
-                    Log.d("RESPONSE", inputLine);
-                    response += inputLine;
-                }
-
-                //response = mHttpConnection.getResponseMessage();
-                //mHttpConnection.disconnect();
-                return response;
-            }
-            catch(MalformedURLException e){
-                response =  "Failed to build URL. ".concat(e.getMessage());
-            }
-            catch(IOException e){
-                response =  "Failed to reach server. ".concat(e.getMessage());
-            }
-            finally {
-                return response;
-            }
-        }
-    }
 }

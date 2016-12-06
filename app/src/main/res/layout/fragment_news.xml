@@ -4,19 +4,19 @@
     android:layout_height="match_parent"
     tools:context="org.kurthen.myband.NewsFragment">
 
-    <LinearLayout
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:id="@+id/newsListView"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/text_no_band"
-            android:textSize="20sp"
-            android:textStyle="normal|italic"
-            android:gravity="center" />
-
-    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/text_no_band"
+        android:textSize="20sp"
+        android:textStyle="normal|italic"
+        android:id="@+id/newsTextViewNoContent"
+        android:gravity="center"
+        android:visibility="gone"/>
 
 </FrameLayout>

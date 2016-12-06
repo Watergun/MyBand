@@ -64,7 +64,7 @@ public class AuthenticationActivity extends AppCompatActivity implements
     /**
      * Id to identity READ_CONTACTS permission request.
      */
-    private static final int REQUEST_READ_CONTACTS = 0;
+    //private static final int REQUEST_READ_CONTACTS = 0;
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -73,7 +73,6 @@ public class AuthenticationActivity extends AppCompatActivity implements
 
     // UI references.
     private View mProgressView;
-    private View mLoginFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -231,10 +230,14 @@ public class AuthenticationActivity extends AppCompatActivity implements
      * Shows the progress UI and hides the login form.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show, final View formView) {
+    private void showProgress(final boolean show) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
+        View loginForm = (View) findViewById(R.id.login_form);
+        View registrationForm = (View) findViewById(R.id.registration_form);
+        final View formView = (loginForm == null) ? registrationForm : loginForm;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
@@ -320,86 +323,20 @@ public class AuthenticationActivity extends AppCompatActivity implements
 */
     public void onLogin(String email, String password){
         //Show progress in foreground
-        showProgress(true, findViewById(R.id.login_form));
+        showProgress(true);
 
-        //Ask the database if the information is correct
-        String answer = DatabaseConnection.getInstance().checkUserCredentials(email, password);
-
-        if(TextUtils.equals(answer, "No such email")) {
-            Log.d("STATUS", "Login failed");
-            showProgress(false, findViewById(R.id.login_form));
-            EditText emailEntry = (EditText) findViewById(R.id.emailEntryLogin);
-            emailEntry.setError("Email nicht registriert");
-            emailEntry.requestFocus();
-            return;
-        }
-        else if(TextUtils.equals(answer, "Wrong password")){
-            Log.d("STATUS", "Login failed");
-            showProgress(false, findViewById(R.id.login_form));
-            EditText passwordEntry = (EditText) findViewById(R.id.passwordEntryLogin);
-            passwordEntry.setError("Inkorrekt");
-            passwordEntry.requestFocus();
-            return;
-        }
-        else if(TextUtils.equals(answer, "Login successful")){
-            Log.d("STATUS", "Logged in successfully");
-            //Create a dummy user with the key credentials
-            User user = DataObjectManager.getInstance().createUser("", email, password);
-
-            //Set current user as local default user
-            SharedPreferences localStatus = getSharedPreferences("local_instance", MODE_PRIVATE);
-            SharedPreferences.Editor editor = localStatus.edit();
-            editor.putBoolean(getString(R.string.local_toggle), true);
-            editor.putString(getString(R.string.local_key), email);
-            editor.putString("password", password);
-            editor.commit();
-
-            //NOT USER EXCEPT DEVELOPMENT
-            CurrentProfile.getInstance().setUser(user);
-
-            //Switdh to the HomeActivity
-            Intent homeIntent = new Intent(this, HomeActivity.class);
-            startActivity(homeIntent);
-            finish();
-        }
+        UserLoginTask login = new UserLoginTask(email, password);
+        login.execute();
     }
+
+
 
     public void onRegistration(String name, String email, String password){
         //Show progress in foreground
-        showProgress(true, findViewById(R.id.registration_form));
+        showProgress(true);
 
-        // Create default user using the common object interface
-        User newUser = DataObjectManager.getInstance().createUser(name, email, password);
-
-        // Post user data on server
-        String answer = DatabaseConnection.getInstance().postRegistration(newUser);
-        if(TextUtils.equals(answer, "Email already registered")){
-            Log.d("STATUS", "Registration failed");
-            showProgress(false, findViewById(R.id.registration_form));
-            EditText emailEntry = (EditText) findViewById(R.id.emailEntryRegister);
-            emailEntry.setError("Email already in use");
-            emailEntry.requestFocus();
-        }
-        else if(TextUtils.equals(answer, "Success")) {
-            Log.d("STATUS", "Registered successfully");
-
-            //NOT USE WHEN NOT IN DEVELOPMENT MODE
-            CurrentProfile.getInstance().setUser(newUser);
-
-            //Set current user as local default user
-            SharedPreferences localStatus = getSharedPreferences("local_instance", MODE_PRIVATE);
-            SharedPreferences.Editor editor = localStatus.edit();
-            editor.putBoolean(getString(R.string.local_toggle), true);
-            editor.putString(getString(R.string.local_key), email);
-            //TODO: Remove security issues
-            editor.putString("password", password);
-            editor.commit();
-
-            //Switch to the HomeActivity
-            Intent homeIntent = new Intent(this, HomeActivity.class);
-            startActivity(homeIntent);
-            finish();
-        }
+        UserRegistrationTask registration = new UserRegistrationTask(name, email, password);
+        registration.execute();
     }
 
     /*
@@ -421,49 +358,129 @@ public class AuthenticationActivity extends AppCompatActivity implements
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    /*
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+
+    public class UserLoginTask extends AsyncTask<Void, Void, String> {
 
         private final String mEmail;
         private final String mPassword;
-        private final Intent mHomeActivity;
+        private String[] mCredentials;
 
-        UserLoginTask(String email, String password, Intent home) {
+        UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
-            mHomeActivity = home;
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+        protected String doInBackground(Void... params) {
+            //Create an irreversible hash of this password
+            mCredentials = AccountSecurity.logCredentials(mEmail, mPassword);
 
-            // TODO: register the new account here.
+            //Ask the database if the information is correct
+            String answer = NetworkAccess.performPostRequest("login.php",
+                    "email=" + mCredentials[0] + "?pw=" + mCredentials[1]);
 
-            startActivity(mHomeActivity);
-            finish();
-            return true;
+            return answer;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
+        protected void onPostExecute(final String status) {
+            if(TextUtils.equals(status, "No such email")) {
+                Log.d("STATUS", "Login failed");
+                showProgress(false);
+                EditText emailEntry = (EditText) findViewById(R.id.emailEntryLogin);
+                emailEntry.setError("Email nicht registriert");
+                emailEntry.requestFocus();
+            }else if(TextUtils.equals(status, "Wrong password")){
+                Log.d("STATUS", "Login failed");
+                showProgress(false);
+                EditText passwordEntry = (EditText) findViewById(R.id.passwordEntryLogin);
+                passwordEntry.setError("Inkorrekt");
+                passwordEntry.requestFocus();
+            }
+            else if(TextUtils.equals(status, "Login successful")){
+                Log.d("STATUS", "Logged in successfully");
 
-            if (success) {
+                //Set current user as local default user
+                SharedPreferences localStatus = getSharedPreferences("local_instance", MODE_PRIVATE);
+                SharedPreferences.Editor editor = localStatus.edit();
+                editor.putBoolean(getString(R.string.local_toggle), true);
+                editor.putString(getString(R.string.local_key), mCredentials[0]);
+                editor.putString("password", mCredentials[1]);
+                editor.commit();
+
+                CurrentProfile.getInstance().setUserCredentials(mCredentials[0], mCredentials[1]);
+
+                //Switch to the HomeActivity
+                Intent homeIntent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(homeIntent);
                 finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
             }
         }
 
         @Override
         protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false, );
+            showProgress(false);
         }
     }
-    */
+
+    public class UserRegistrationTask extends AsyncTask<Void, Void, String>{
+        private String mEmail;
+        private String mPassword;
+        private String mName;
+        private String[] mCredentials;
+
+        public UserRegistrationTask(String name, String email, String password){
+            mName = name;
+            mEmail = email;
+            mPassword = password;
+        }
+
+        @Override
+        protected String doInBackground(Void... params){
+            //
+            mCredentials = AccountSecurity.logCredentials(mEmail, mPassword);
+
+            // Post user data on server
+            String answer = NetworkAccess.performPostRequest("registration.php",
+                    "email=" + mCredentials[0] + "?pw=" + mCredentials[1]);
+
+            return answer;
+        }
+
+        @Override
+        protected void onPostExecute(String status){
+            if(TextUtils.equals(status, "Email already registered")){
+                Log.d("STATUS", "Registration failed");
+                EditText emailEntry = (EditText) findViewById(R.id.emailEntryRegister);
+                emailEntry.setError("Email already in use");
+                emailEntry.requestFocus();
+            }
+            else if(TextUtils.equals(status, "Success")) {
+                Log.d("STATUS", "Registered successfully");
+
+                //Set current user as local default user
+                SharedPreferences localStatus = getSharedPreferences("local_instance", MODE_PRIVATE);
+                SharedPreferences.Editor editor = localStatus.edit();
+                editor.putBoolean(getString(R.string.local_toggle), true);
+                editor.putString(getString(R.string.local_key), mCredentials[0]);
+                editor.putString("password", mCredentials[1]);
+                editor.commit();
+
+                //Save user information in class
+                CurrentProfile.getInstance().setUserCredentials(mName, mCredentials[0], mCredentials[1]);
+
+                //Switch to the HomeActivity
+                Intent homeIntent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(homeIntent);
+                finish();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            showProgress(false);
+        }
+    }
+
 }
 

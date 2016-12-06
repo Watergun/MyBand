@@ -6,9 +6,15 @@
             android:id="@+id/nav_userprofile"
             android:icon="@drawable/ic_menu_manage"
             android:title="Profil bearbeiten" />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@android:drawable/ic_input_delete"
+            android:title="Ausloggen" />
     </group>
 
-    <item android:title="Bands">
+    <item android:title="Bands"
+        android:id="@+id/bands_menu_drawer">
         <menu>
             <item
                 android:id="@+id/nav_add_band"

@@ -1,13 +1,26 @@
 package org.kurthen.myband;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Queue;
+import java.util.Vector;
 
 
 /**
@@ -19,44 +32,78 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class NewsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
+    private View mFragmentRoot;
+    private Vector<Update> mUpdateList;
+    private ArrayAdapter<Update> mUpdateAdapter;
 
+    private ListView mUpdateListView;
     private OnNewsInteraction mListener;
 
     public NewsFragment() {
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment NewsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static NewsFragment newInstance() {
-        NewsFragment fragment = new NewsFragment();
-        return fragment;
+        return new NewsFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+/*        if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
+  */
+        mUpdateList = new Vector<Update>(0);
+        mUpdateAdapter = new UpdateListAdapter(getContext(), mUpdateList);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_news, container, false);
-        return root;
+        mFragmentRoot = inflater.inflate(R.layout.fragment_news, container, false);
+        mUpdateListView = (ListView) mFragmentRoot.findViewById(R.id.newsListView);
+        mUpdateListView.setAdapter(mUpdateAdapter);
+
+        Band currentBand = CurrentProfile.getInstance().getSelectedBand();
+        if(currentBand == null){
+            mFragmentRoot.findViewById(R.id.newsTextViewNoContent).setVisibility(View.VISIBLE);
+        }
+        else{
+            refreshList(currentBand.getUpdates());
+        }
+        return mFragmentRoot;
+    }
+
+    public void refreshList(Update[] newUpdates){
+        if(newUpdates == null || mUpdateAdapter == null){
+            return;
+        }
+
+        // Display a text message when no update is existent
+        if(newUpdates.length == 0){
+            TextView t = (TextView) mFragmentRoot.findViewById(R.id.newsTextViewNoContent);
+            t.setVisibility(View.VISIBLE);
+            t.setText(R.string.text_news_no_content);
+        }
+
+        // Convert the array to a dynamic list
+        ListIterator<Update> it = Arrays.asList(newUpdates).listIterator();
+
+        // Essential part here is to find out the local notification counter
+        int lastUpdateNumber = 0;
+        if(!mUpdateAdapter.isEmpty())
+            lastUpdateNumber = mUpdateAdapter.getItem(mUpdateAdapter.getCount()-1).getNotficationCounter();
+
+        // Now loop through every locally known update and compare the notification number
+        // which indicates whether the update is fresh (e.g. not received yet) or already seen
+        while(it.hasNext()){
+            Update u = it.next();
+            if(u.getNotficationCounter() > lastUpdateNumber)
+                mUpdateAdapter.add(u);
+        }
+        mUpdateAdapter.notifyDataSetChanged();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -96,5 +143,29 @@ public class NewsFragment extends Fragment {
     public interface OnNewsInteraction {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public class UpdateListAdapter extends ArrayAdapter<Update>{
+        public UpdateListAdapter(Context context, List<Update> elements){
+            super(context, R.layout.news_list_item, elements);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent){
+            Update u = getItem(position);
+
+            if(convertView == null){
+                convertView = LayoutInflater.from(getContext()).
+                        inflate(R.layout.news_list_item, parent, false);
+            }
+
+            TextView title = (TextView) convertView.findViewById(R.id.list_item_title);
+            TextView content = (TextView) convertView.findViewById(R.id.list_item_content);
+
+            title.setText(u.getTitle());
+            content.setText("Content of update number: " + position);
+
+            return convertView;
+        }
     }
 }

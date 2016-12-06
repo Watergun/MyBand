@@ -9,13 +9,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/song_list_view"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/text_no_band"
             android:textSize="20sp"
             android:textStyle="normal|italic"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:id="@+id/musicTextViewNoContent"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

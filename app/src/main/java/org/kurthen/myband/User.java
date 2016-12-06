@@ -1,15 +1,18 @@
 package org.kurthen.myband;
 
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 
 /**
  * Created by Leonhard on 12.09.2016.
  */
 public class User {
+    private int id;
     private String mFirstName;
     private String mLastName;
     private String mEmail;
-    private Image mPicture;
+    private Drawable mPictureThumbnail;
+    private Drawable mPictureFullscreen;
     private String mPassword;
     private Band[] mBands;
     private Calendar mCalendar;
@@ -22,6 +25,14 @@ public class User {
         mFirstName = name;
         mEmail = email;
         mPassword = password;
+    }
+
+    public int getId(){
+        return id;
+    }
+
+    public void setId(int id){
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -56,12 +67,12 @@ public class User {
         this.mPassword = mPassword;
     }
 
-    public Image getPicture() {
-        return mPicture;
+    public Drawable getPictureThumbnail() {
+        return mPictureThumbnail;
     }
 
-    public void setPicture(Image mPicture) {
-        this.mPicture = mPicture;
+    public void setPictureThumbnail(Drawable mPicture) {
+        this.mPictureThumbnail = mPicture;
     }
 
     public Band[] getBands() {
@@ -78,5 +89,12 @@ public class User {
 
     public void setInstruments(String[] mInstruments) {
         this.mInstruments = mInstruments;
+    }
+
+    public void setEvents(Event[] events){
+        if(mCalendar == null){
+            mCalendar = new Calendar();
+        }
+        mCalendar.setEvents(events);
     }
 }

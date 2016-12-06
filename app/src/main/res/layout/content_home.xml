@@ -12,49 +12,135 @@
     tools:context="org.kurthen.myband.HomeActivity"
     tools:showIn="@layout/app_bar_home">
 
-    <ScrollView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/contentView"/>
+        android:id="@+id/fragment_container_home"/>
+
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:background="@color/navigationBar"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:divider="@android:drawable/ic_menu_send"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="@color/navigationBar">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:paddingTop="2dp"
+        android:layout_height="42dp">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_weight="1"
-            android:src="@drawable/ic_public_white_36dp"
-            android:layout_gravity="center"
-            android:id="@+id/newsImageView"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@android:color/background_light"
+            android:layout_gravity="fill">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_public_white_36dp"
+                android:layout_gravity="center"
+                android:id="@+id/newsImageView"
+                android:background="@android:color/background_light"
+                android:tint="@color/colorPrimary" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Neuigkeiten"
+                android:textStyle="normal|bold"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:textColor="@color/colorPrimary"
+                android:textColorHighlight="@color/colorPrimary"
+                android:textColorHint="@color/colorPrimary" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_weight="1"
-            android:src="@drawable/ic_insert_invitation_white_36dp"
-            android:layout_gravity="center"
-            android:id="@+id/calendarImageView"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_gravity="fill">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_insert_invitation_white_36dp"
+                android:layout_gravity="center"
+                android:id="@+id/calendarImageView"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kalender"
+                android:textStyle="normal|bold"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:textColor="@android:color/background_light" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_weight="1"
-            android:src="@drawable/ic_monetization_on_white_36dp"
-            android:layout_gravity="center"
-            android:id="@+id/financesImageView"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:elevation="0dp"
+            android:background="@android:color/background_light">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_euro_symbol_white_36dp"
+                android:layout_gravity="center"
+                android:id="@+id/financesImageView"
+                android:tint="@color/colorPrimary"
+                android:backgroundTint="@android:color/background_light"
+                android:background="@android:color/background_light" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kasse"
+                android:textStyle="normal|bold"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:textColor="@color/colorPrimary" />
+        </LinearLayout>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_weight="1"
-            android:src="@drawable/ic_album_white_36dp"
-            android:id="@+id/musicImageView"/>
-
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@android:color/background_light">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_album_white_36dp"
+                android:id="@+id/musicImageView"
+                android:layout_gravity="center"
+                android:background="@android:color/background_light"
+                android:tint="@color/colorPrimary"
+                tools:src="@drawable/ic_group_white_36dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kontakte"
+                android:textStyle="normal|bold"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:textColor="@color/colorPrimary" />
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

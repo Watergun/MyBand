@@ -9,4 +9,12 @@ public class Calendar{
     public Calendar(){
 
     }
+
+    public void setEvents(Event[] events){
+        this.events = events;
+    }
+
+    public Event[] getEvents(){
+        return events;
+    }
 }

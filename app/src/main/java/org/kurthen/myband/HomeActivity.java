@@ -1,7 +1,12 @@
 package org.kurthen.myband;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -21,39 +26,55 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.sql.Ref;
+
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
                     NewsFragment.OnNewsInteraction,
                     FinancesFragment.OnFinancesInteraction,
                     CalendarFragment.OnCalendarInteraction,
-                    MusicFragment.OnMusicInteraction{
+                    ContactsFragment.OnContactsInteraction{
 
     private TextView mUsernameTextView;
     private TextView mEmailTextView;
 
-    private Fragment mNewsFragment;
-    private Fragment mCalendarFragment;
-    private Fragment mFinancesFragment;
-    private Fragment mMusicFragment;
+    private ImageView mProfilePicture;
+    private Menu mBandsMenu;
+
+    private NewsFragment mNewsFragment;
+    private CalendarFragment mCalendarFragment;
+    private FinancesFragment mFinancesFragment;
+    private ContactsFragment mContactsFragment;
 
     private FragmentManager mFragManager;
+
+    private boolean uiWidgetsBuilt = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Set home layout
         setContentView(R.layout.activity_home);
 
-        //Setup toolbar on the top
+        // Set toolbar on the top
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //Setup the action triggered by the floating 'plus' button
+        // Set the action triggered by the floating 'plus' button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.plusButton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Snackbar sb = Snackbar.make(view, "Neues Item", Snackbar.LENGTH_LONG);
+                sb.setAction("Action", null);
+                sb.setCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onShown(Snackbar snackbar) {
+                        super.onShown(snackbar);
+
+                    }
+                });
             }
         });
 
@@ -99,14 +120,24 @@ public class HomeActivity extends AppCompatActivity
 
         //Initialize the fragment manager and start with the newspage (Page 0)
         mFragManager = getSupportFragmentManager();
-        fragmentSwitch(0);
+
+        mNewsFragment = NewsFragment.newInstance();
+        mCalendarFragment = CalendarFragment.newInstance();
+        mFinancesFragment = FinancesFragment.newInstance();
+        mMusicFragment = ContactFragment.newInstance();
 
         if(savedInstanceState != null){
             //savedInstanceState.getString("openedPage");
         }
 
-        DatabaseConnection.getInstance().receiveCurrentUserInformation();
+        //Fetch user data
+        ImageManager.getInstance().setContext(getApplicationContext());
+        DatabaseConnection.getInstance().setContext(getApplicationContext());
 
+        final Handler refreshCycle = new Handler();
+        refreshCycle.post(new RefreshUIData());
+
+        mBandsMenu = navigationView.getMenu().findItem(R.id.bands_menu_drawer).getSubMenu();
     }
 
     //Close the drawer on 'back' button
@@ -125,13 +156,60 @@ public class HomeActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
 
-        //Set current user in the navigation bar
         mUsernameTextView = (TextView) findViewById(R.id.usernameTextViewHome);
         mEmailTextView = (TextView) findViewById(R.id.emailTextViewHome);
-        mUsernameTextView.setText(CurrentProfile.getInstance().getUser().getFirstName());
-        mEmailTextView.setText(CurrentProfile.getInstance().getUser().getEmail());
 
+        mProfilePicture = (ImageView) findViewById(R.id.personalImageView);
+
+        Band[] bands = CurrentProfile.getInstance().getBands();
+        if(bands != null) {
+            for (Band band : bands) {
+                mBandsMenu.add(Menu.NONE, band.getId(), Menu.NONE, band.getName());
+            }
+            CurrentProfile.getInstance().selectBand(0);
+        }
+
+        // Start the NewsActivity at beginning
+        fragmentSwitch(0);
+
+        uiWidgetsBuilt = true;
         return true;
+    }
+
+    public class RefreshUIData implements Runnable{
+        Handler refreshCycler;
+
+        public RefreshUIData(){
+            refreshCycler = new Handler();
+        }
+
+        @Override
+        public void run(){
+            CurrentProfile profile = CurrentProfile.getInstance();
+
+            if(uiWidgetsBuilt) {
+                mUsernameTextView.setText(profile.getUser().getFirstName());
+                mEmailTextView.setText(profile.getUser().getEmail());
+
+                mProfilePicture.setImageDrawable(profile.getUser().getPictureThumbnail());
+
+                mNewsFragment.refreshList(profile.getUpdates());
+                mCalendarFragment.refreshList(profile.getEvents());
+                mFinancesFragment.refreshList(profile.getTransactions());
+                mMusicFragment.refreshList(profile.getSongs());
+
+                // Add bands that the user is not yet member of
+                Band[] bands = profile.getBands();
+                if(bands != null){
+                    for (Band band : bands) {
+                        if(mBandsMenu.findItem(band.getId()) == null){
+                            mBandsMenu.add(Menu.NONE, band.getId(), Menu.NONE, band.getName());
+                        }
+                    }
+                }
+            }
+            refreshCycler.postDelayed(this, 1000);
+        }
     }
 
     @Override
@@ -157,10 +235,18 @@ public class HomeActivity extends AppCompatActivity
 
         if (id == R.id.nav_userprofile) {
             // Handle the camera action
-        } else if (id == R.id.nav_view) {
-
+        } else if (id == R.id.nav_logout) {
+            logout();
         } else if (id == R.id.nav_add_band){
 
+        } else{
+            Band[] bands = CurrentProfile.getInstance().getBands();
+            for(int i = 0; i < bands.length; i++){
+                if(id == bands[i].getId()){
+                    Log.d("STATUS", "Band " + bands[i].getName() + " got selected!");
+                    CurrentProfile.getInstance().selectBand(i);
+                }
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -168,25 +254,36 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
+    public void logout(){
+        SharedPreferences sp = getSharedPreferences("local_instance", MODE_PRIVATE);
+        sp.edit().putBoolean(getString(R.string.local_toggle), false).commit();
+
+        CurrentProfile.getInstance().resetUser();
+
+        Intent authIntent = new Intent(this, AuthenticationActivity.class);
+        startActivity(authIntent);
+        finish();
+    }
+
     public void fragmentSwitch(int fragNr){
         FragmentTransaction action = mFragManager.beginTransaction();
-        Fragment newFragment;
+        Fragment selFragment;
         int titleId = 0;
         switch(fragNr){
             case 0: //News fragment
-                newFragment = NewsFragment.newInstance();
+                selFragment = mNewsFragment;
                 titleId = R.string.title_fragment_news;
                 break;
             case 1:
-                newFragment = CalendarFragment.newInstance();
+                selFragment = mCalendarFragment;
                 titleId = R.string.title_fragment_calendar;
                 break;
             case 2:
-                newFragment = FinancesFragment.newInstance();
+                selFragment = mFinancesFragment;
                 titleId = R.string.title_fragment_finances;
                 break;
             case 3:
-                newFragment = MusicFragment.newInstance();
+                selFragment = mMusicFragment;
                 titleId = R.string.title_fragment_music;
                 break;
             default:
@@ -197,11 +294,13 @@ public class HomeActivity extends AppCompatActivity
         Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
         tb.setTitle(titleId);
 
-        action.replace(R.id.contentView, newFragment);
+        action.replace(R.id.fragment_container_home, selFragment);
         action.commit();
     }
 
     public void onFragmentInteraction(Uri uri){
 
     }
+
+
 }

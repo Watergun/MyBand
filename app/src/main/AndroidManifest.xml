@@ -24,13 +24,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".HomeActivity"
             android:label="@string/title_fragment_news"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".AuthenticationActivity"
-            android:label="@string/title_fragment_registration"></activity>
+            android:label="@string/title_fragment_registration" />
+
+        <service
+            android:name=".SynchronizingService"
+            android:enabled="true"
+            android:exported="false"
+            android:label="Synchronizing Service"/>
     </application>
 
 </manifest>

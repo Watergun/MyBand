@@ -8,6 +8,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Vector;
 
 
 /**
@@ -19,16 +27,13 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class FinancesFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private View mFragmentRoot;
 
     private OnFinancesInteraction mListener;
+
+    private ListView mTransactionListView;
+    private TransactiontListAdapter mTransactionAdapter;
 
     public FinancesFragment() {
         // Required empty public constructor
@@ -49,18 +54,49 @@ public class FinancesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        mTransactionAdapter = new TransactiontListAdapter(getContext(), new Vector<Transaction>());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_finances, container, false);
-        return root;
+        mFragmentRoot = inflater.inflate(R.layout.fragment_finances, container, false);
+        mTransactionListView = (ListView) mFragmentRoot.findViewById(R.id.transaction_list_view);
+        mTransactionListView.setAdapter(mTransactionAdapter);
+
+        Band currentBand = CurrentProfile.getInstance().getSelectedBand();
+        if(currentBand == null){
+            mFragmentRoot.findViewById(R.id.financesTextViewNoContent).setVisibility(View.VISIBLE);
+        }
+        else{
+            refreshList(currentBand.getTransactions());
+        }
+
+        return mFragmentRoot;
+    }
+
+    public void refreshList(Transaction[] newTransactions){
+        if(newTransactions == null || mTransactionAdapter == null){
+            return;
+        }
+        else if(newTransactions.length == 0){
+            TextView t = (TextView) mFragmentRoot.findViewById(R.id.financesTextViewNoContent);
+            t.setVisibility(View.VISIBLE);
+            t.setText(R.string.text_finances_no_content);
+        }
+
+        ListIterator<Transaction> it = Arrays.asList(newTransactions).listIterator();
+
+        int lastUpdateNumber = 0;
+        if(!mTransactionAdapter.isEmpty())
+            lastUpdateNumber = mTransactionAdapter.getItem(mTransactionAdapter.getCount()-1).getNotficationCounter();
+
+        while(it.hasNext()){
+            Transaction t = it.next();
+            if(t.getNotficationCounter() > lastUpdateNumber)
+                mTransactionAdapter.add(t);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -100,5 +136,27 @@ public class FinancesFragment extends Fragment {
     public interface OnFinancesInteraction {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public class TransactiontListAdapter extends ArrayAdapter<Transaction> {
+        public TransactiontListAdapter(Context context, List<Transaction> elements){
+            super(context, R.layout.transaction_list_item, elements);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent){
+            Transaction t = getItem(position);
+
+            if(convertView == null){
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.transaction_list_item, parent);
+            }
+
+            TextView title = (TextView) convertView.findViewById(R.id.list_item_title);
+            TextView content = (TextView) convertView.findViewById(R.id.list_item_content);
+            title.setText("" + t.getValue());
+            title.setText(t.getTitle());
+
+            return convertView;
+        }
     }
 }
