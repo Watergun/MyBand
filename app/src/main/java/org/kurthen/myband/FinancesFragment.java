@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +27,7 @@ import java.util.Vector;
  * Use the {@link FinancesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FinancesFragment extends Fragment {
+public class FinancesFragment extends ListFragment {
 
     private View mFragmentRoot;
 
@@ -62,14 +63,14 @@ public class FinancesFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mFragmentRoot = inflater.inflate(R.layout.fragment_finances, container, false);
-        mTransactionListView = (ListView) mFragmentRoot.findViewById(R.id.transaction_list_view);
+        mTransactionListView = (ListView) mFragmentRoot.findViewById(android.R.id.list);
         mTransactionListView.setAdapter(mTransactionAdapter);
 
         Band currentBand = CurrentProfile.getInstance().getSelectedBand();
-        if(currentBand == null){
-            mFragmentRoot.findViewById(R.id.financesTextViewNoContent).setVisibility(View.VISIBLE);
-        }
-        else{
+        //if(currentBand == null){
+        //    mFragmentRoot.findViewById(R.id.financesTextViewNoContent).setVisibility(View.VISIBLE);
+        //}
+        if(currentBand != null){
             refreshList(currentBand.getTransactions());
         }
 
@@ -81,10 +82,12 @@ public class FinancesFragment extends Fragment {
             return;
         }
         else if(newTransactions.length == 0){
-            TextView t = (TextView) mFragmentRoot.findViewById(R.id.financesTextViewNoContent);
-            t.setVisibility(View.VISIBLE);
-            t.setText(R.string.text_finances_no_content);
+            //TextView t = (TextView) mFragmentRoot.findViewById(R.id.financesTextViewNoContent);
+            //t.setVisibility(View.VISIBLE);
+            //t.setText(R.string.text_finances_no_content);
+            return;
         }
+        //mFragmentRoot.findViewById(R.id.financesTextViewNoContent).setVisibility(View.INVISIBLE);
 
         ListIterator<Transaction> it = Arrays.asList(newTransactions).listIterator();
 

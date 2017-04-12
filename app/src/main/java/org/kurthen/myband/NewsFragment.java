@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -31,7 +32,7 @@ import java.util.Vector;
  * Use the {@link NewsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NewsFragment extends Fragment {
+public class NewsFragment extends ListFragment {
 
     private View mFragmentRoot;
     private Vector<Update> mUpdateList;
@@ -39,6 +40,8 @@ public class NewsFragment extends Fragment {
 
     private ListView mUpdateListView;
     private OnNewsInteraction mListener;
+
+    private int mLastShownBand = -1;
 
     public NewsFragment() {
     }
@@ -63,14 +66,14 @@ public class NewsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mFragmentRoot = inflater.inflate(R.layout.fragment_news, container, false);
-        mUpdateListView = (ListView) mFragmentRoot.findViewById(R.id.newsListView);
+        mUpdateListView = (ListView) mFragmentRoot.findViewById(android.R.id.list);
         mUpdateListView.setAdapter(mUpdateAdapter);
 
         Band currentBand = CurrentProfile.getInstance().getSelectedBand();
-        if(currentBand == null){
-            mFragmentRoot.findViewById(R.id.newsTextViewNoContent).setVisibility(View.VISIBLE);
-        }
-        else{
+        //if(currentBand == null){
+        //   mFragmentRoot.findViewById(R.id.newsTextViewNoContent).setVisibility(View.VISIBLE);
+        //}
+        if(currentBand != null){
             refreshList(currentBand.getUpdates());
         }
         return mFragmentRoot;
@@ -83,27 +86,53 @@ public class NewsFragment extends Fragment {
 
         // Display a text message when no update is existent
         if(newUpdates.length == 0){
-            TextView t = (TextView) mFragmentRoot.findViewById(R.id.newsTextViewNoContent);
-            t.setVisibility(View.VISIBLE);
-            t.setText(R.string.text_news_no_content);
+            //TextView t = (TextView) mFragmentRoot.findViewById(android.R.id.empty);
+            //t.setText(R.string.text_news_no_content);
+            return;
         }
+        //mFragmentRoot.findViewById(R.id.newsTextViewNoContent).setVisibility(View.INVISIBLE);
 
         // Convert the array to a dynamic list
         ListIterator<Update> it = Arrays.asList(newUpdates).listIterator();
 
-        // Essential part here is to find out the local notification counter
-        int lastUpdateNumber = 0;
-        if(!mUpdateAdapter.isEmpty())
-            lastUpdateNumber = mUpdateAdapter.getItem(mUpdateAdapter.getCount()-1).getNotficationCounter();
+        // There are several performance related issues we have to face here:
+        // 1. An UI Update if no update happened is just useless and leads to flickering
+        // 2. If a new update appears, the Array Adapter has to be informed
+        // 3. If a different band got selected by the user, the Array Adapter has to be informed
+        //
+        // Problem 1 + 2 resulted in the implementation of the NotificationCounter
+        //              that tracks the degree of recentness [it's just an incrementing counter]
+        // Problem 3 is solved by the implementation of the mLastShownBand attribute
 
-        // Now loop through every locally known update and compare the notification number
-        // which indicates whether the update is fresh (e.g. not received yet) or already seen
-        while(it.hasNext()){
-            Update u = it.next();
-            if(u.getNotficationCounter() > lastUpdateNumber)
-                mUpdateAdapter.add(u);
+        if(mLastShownBand == CurrentProfile.getInstance().getSelectedBandIndex()) { // Band didn't change
+            // Essential part here is to find out the local notification counter
+            int lastUpdateNumber = 0;
+            if (!mUpdateAdapter.isEmpty())
+                lastUpdateNumber = mUpdateAdapter.getItem(mUpdateAdapter.getCount() - 1).getNotficationCounter();
+
+            // Now loop through every locally known update and compare the notification number
+            // which indicates whether the update is fresh (e.g. not received yet) or already seen
+            while (it.hasNext()) {
+                Update u = it.next();
+                if (u.getNotficationCounter() > lastUpdateNumber)
+                    mUpdateAdapter.add(u);
+            }
+        }
+        else{   // Band changed and therefore the array adapter has to be cleared and build up again
+                // with the correct updates
+            mUpdateAdapter.clear();
+            while(it.hasNext()){
+                mUpdateAdapter.add(it.next());
+            }
         }
         mUpdateAdapter.notifyDataSetChanged();
+
+        mLastShownBand = CurrentProfile.getInstance().getSelectedBandIndex();
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id){
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

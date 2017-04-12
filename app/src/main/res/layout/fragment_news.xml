@@ -7,15 +7,15 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/newsListView"/>
+        android:id="@android:id/list"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/text_no_band"
+        android:text="@string/text_news_no_content"
         android:textSize="20sp"
         android:textStyle="normal|italic"
-        android:id="@+id/newsTextViewNoContent"
+        android:id="@android:id/empty"
         android:gravity="center"
         android:visibility="gone"/>
 

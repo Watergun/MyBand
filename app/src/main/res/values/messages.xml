@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="MSG_STOP">5</integer>
+    <integer name="MSG_PAUSE">10</integer>
+
+    <integer name="MSG_SYNC">50</integer>
+
+    <integer name="MSG_NO_CONNECTION">100</integer>
+
+    <integer name="MSG_REFRESH">200</integer>
+
+
+</resources>

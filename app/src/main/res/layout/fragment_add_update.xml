@@ -1,0 +1,51 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.kurthen.myband.AddUpdateFragment"
+    android:background="@color/light_grey">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="399dp"
+            android:weightSum="1"
+            android:foregroundGravity="center_vertical|center_horizontal"
+            android:gravity="top|center_horizontal"
+            android:layout_weight="1">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:hint="Titel"
+                android:ems="10"
+                android:id="@+id/editText3"
+                android:layout_margin="8dp"
+                android:padding="8dp"
+                android:background="@android:color/white" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:hint="Beschreibung"
+                android:ems="10"
+                android:id="@+id/editText4"
+                android:layout_margin="8dp"
+                android:textAlignment="gravity"
+                android:gravity="top|left"
+                android:allowUndo="false"
+                android:ellipsize="middle"
+                android:fadingEdge="horizontal|vertical"
+                android:background="@android:color/white"
+                android:padding="9dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+</FrameLayout>

@@ -30,26 +30,33 @@ public class LaunchActivity extends AppCompatActivity {
         }
 
         //Start the background network service that is syncing our user data
-        Intent networkService = new Intent(this, SynchronizingService.class);
-        startService(networkService);
+        //Intent notificationService = new Intent(this, SynchronizingService.class);
+        //startService(networkService);
 
         SharedPreferences localStatus = getSharedPreferences("local_instance", MODE_PRIVATE);
 
         if(localStatus.getBoolean(getString(R.string.local_toggle), false))
             startMainActivity(localStatus.getString(getString(R.string.local_key), ""),
-                            localStatus.getString("password", ""));
+                            localStatus.getString("password", ""),
+                            localStatus.getString("token", ""));
         else
             startAuthActivity();
         finish();
     }
 
     //Separate main activity start
-    public void startMainActivity(String email, String password){
+    public void startMainActivity(String email, String password, String token){
         Log.d("STATUS", "Local User found: " + email);
 
-        //Even though a local user has been found, authentication is still necessary
-        AutoLoginTask autoLogin = new AutoLoginTask(email, password);
-        autoLogin.execute();
+        //Even though a local user has been found, authentication is still necessary (is it?)
+        //AutoLoginTask autoLogin = new AutoLoginTask(email, password);
+        //autoLogin.execute();
+        CurrentProfile.getInstance().setUserCredentials(email, password);
+        CurrentProfile.getInstance().setAuthToken(token);
+
+        // The HomeActivity does all the on-the-edge-of-authentication stuff
+        Intent homeAct = new Intent(getApplicationContext(), HomeActivity.class);
+        startActivity(homeAct);
     }
 
     //Separate authentication
@@ -71,7 +78,8 @@ public class LaunchActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Void... params){
-            return DatabaseConnection.getInstance().checkUserCredentials(mEmail, mPassword);
+            DatabaseConnection.getInstance().fetchUserData();
+            return "Login successful";
         }
 
         @Override

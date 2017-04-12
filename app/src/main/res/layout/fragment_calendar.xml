@@ -11,23 +11,23 @@
 
         <include
             layout="@layout/calendar_layout"
-            android:layout_height="wrap_content"
+            android:layout_height="222dp"
             android:layout_width="match_parent"/>
 
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/event_list_view"/>
+            android:id="@android:id/list"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/text_no_band"
+            android:text="@string/text_calendar_no_content"
             android:textSize="20sp"
             android:textStyle="normal|italic"
             android:gravity="center"
             android:visibility="gone"
-            android:id="@+id/calendarTextViewNoContent"/>
+            android:id="@android:id/empty"/>
 
     </LinearLayout>
 </FrameLayout>

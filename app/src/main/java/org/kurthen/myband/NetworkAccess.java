@@ -82,11 +82,12 @@ public class NetworkAccess{
 
         String response = "";
 
-        Log.d("REQUEST", args);
-
         //Establish HTTP connection
         try {
-            URL serverUrl = new URL(mServerName + serverScript);
+            Log.d("REQUEST", mServerName + serverScript + "?");
+            Log.d("REQUEST", "Transmitting data: " + args);
+
+            URL serverUrl = new URL(mServerName + serverScript + "?");
             //mServerUrl = new URL("http://requestb.in/16ury2w1");
             HttpURLConnection conn = (HttpURLConnection) serverUrl.openConnection();
             conn.setRequestMethod("POST");
@@ -107,6 +108,8 @@ public class NetworkAccess{
             while((inputLine = r.readLine()) != null) {
                 response += inputLine;
             }
+
+            Log.d("RESPONSE", response);
 
             return response;
         }

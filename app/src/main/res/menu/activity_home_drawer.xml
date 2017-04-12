@@ -1,26 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_userprofile"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Profil bearbeiten" />
-
-        <item
-            android:id="@+id/nav_logout"
-            android:icon="@android:drawable/ic_input_delete"
-            android:title="Ausloggen" />
-    </group>
 
     <item android:title="Bands"
         android:id="@+id/bands_menu_drawer">
-        <menu>
-            <item
-                android:id="@+id/nav_add_band"
-                android:icon="@android:drawable/ic_input_add"
-                android:title="Neue Band erstellen" />
+
+        <menu android:id="@+id/bands_menu">
+            <group
+                android:id="@+id/bands_menu_item_group">
+            </group>
         </menu>
+
     </item>
+
+    <item
+        android:id="@+id/nav_add_band"
+        android:icon="@android:drawable/ic_input_add"
+        android:title="Neue Band erstellen" />
+
+    <item android:title="Benutzerprofil bearbeiten"
+        android:id="@+id/nav_userprofile"
+        android:icon="@android:drawable/ic_menu_edit"/>
+
+    <item android:title="App-Einstellungen"
+        android:id="@+id/nav_app_settings"
+        android:icon="@drawable/ic_menu_manage"/>
+
+    <item android:title="Über"
+        android:id="@+id/nav_about"
+        android:icon="@android:drawable/ic_dialog_info"/>
 
 </menu>

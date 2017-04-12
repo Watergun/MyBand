@@ -12,16 +12,16 @@
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/transaction_list_view"/>
+            android:id="@android:id/list"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/text_no_band"
+            android:text="@string/text_finances_no_content"
             android:textSize="20sp"
             android:textStyle="normal|italic"
             android:gravity="center"
-            android:id="@+id/financesTextViewNoContent"
+            android:id="@android:id/empty"
             android:visibility="gone"/>
 
     </LinearLayout>

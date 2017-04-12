@@ -2,6 +2,7 @@ package org.kurthen.myband;
 
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.text.TextUtils;
 
 /**
  * Created by Leonhard on 12.09.2016.
@@ -12,6 +13,7 @@ public class User {
     private String mLastName;
     private String mEmail;
     private Drawable mPictureThumbnail;
+    private String mPictureHash;
     private Drawable mPictureFullscreen;
     private String mPassword;
     private Band[] mBands;
@@ -73,6 +75,10 @@ public class User {
 
     public void setPictureThumbnail(Drawable mPicture) {
         this.mPictureThumbnail = mPicture;
+    }
+
+    public boolean comparePictureHash(String hash){
+        return TextUtils.equals(mPictureHash, hash);
     }
 
     public Band[] getBands() {

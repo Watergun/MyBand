@@ -2,7 +2,9 @@
 <resources>
     <color name="colorPrimary">#9a0031</color>
     <color name="colorPrimaryDark">#3a0000</color>
-    <color name="colorAccent">#000000</color>
+    <color name="colorAccent">#cccccc</color>
     <color name="lightBackground">#3E0125</color>
-    <color name="navigationBar">#9A0031</color>
+    <color name="light_grey">#dddddd</color>
+    <color name="light">#FFffffff</color>
+    <color name="navigationBar">#9a0031</color>
 </resources>

@@ -30,16 +30,31 @@
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@android:drawable/ic_input_add"
-        android:id="@+id/imageButton"
+        app:srcCompat="@drawable/ic_add_circle_white_48dp"
+        android:id="@+id/home_add_button"
         android:layout_weight="1"
-        android:tint="@color/colorAccent"
-        android:background="@android:color/background_light"
-        app:layout_anchorGravity="top|right"
-        android:layout_gravity="top|right"
+        android:tint="@color/colorPrimary"
+        android:background="@android:color/transparent"
         android:layout_marginTop="70dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="15dp"
         style="@android:style/Widget.Holo.ImageButton"
-        android:adjustViewBounds="false" />
+        android:onClick="onAddUpdateClicked"
+        android:adjustViewBounds="false"
+        android:elevation="10dp"
+        app:layout_anchorGravity="center_vertical|center_horizontal"
+        android:layout_gravity="top|right" />
+    <!--
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/ic_add_circle_black_36dp"
+            android:id="@+id/floatingActionButton"
+            app:layout_anchorGravity="top|right"
+            android:layout_gravity="top|right"
+            app:backgroundTint="@android:color/transparent"
+            android:layout_marginTop="70dp"
+            android:layout_marginRight="10dp" /> -->
 
 </android.support.design.widget.CoordinatorLayout>

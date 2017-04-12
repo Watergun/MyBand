@@ -4,15 +4,12 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import org.kurthen.myband.R;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +30,7 @@ public class ContactsFragment extends Fragment {
 
     private OnContactsInteraction mListener;
 
-    private ListView mSongListView;
+    private ListView mContactListView;
     private ContactListAdapter mContactAdapter;
 
 
@@ -45,7 +42,7 @@ public class ContactsFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment MusicFragment.
+     * @return A new instance of fragment ContactFragment.
      */
     // TODO: Rename and change types and number of parameters
     public static ContactsFragment newInstance() {
@@ -63,33 +60,39 @@ public class ContactsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mFragmentRoot = inflater.inflate(R.layout.fragment_music, container, false);
+        mFragmentRoot = inflater.inflate(R.layout.fragment_contacts
+                ,container ,false);
 
-        mSongListView = (ListView) mFragmentRoot.findViewById(R.id.song_list_view);
-        mSongListView.setAdapter(mContactAdapter);
+        mContactListView = (ListView) mFragmentRoot.findViewById(android.R.id.list);
+        mContactListView.setAdapter(mContactAdapter);
 
         Band currentBand = CurrentProfile.getInstance().getSelectedBand();
-        if(currentBand == null){
-            mFragmentRoot.findViewById(R.id.musicTextViewNoContent).setVisibility(View.VISIBLE);
-        }
-        else{
-            refreshList(currentBand.getSongs());
+        //if(currentBand == null){
+        //    mFragmentRoot.findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
+        //}
+        if(currentBand != null){
+            refreshList(currentBand.getContacts());
         }
 
         return mFragmentRoot;
     }
 
-    public void refreshList(Contact[] newSongs){
-        if(newSongs == null ||mContactAdapter == null){
+    public void refreshList(Contact[] newContacts){
+        if(newContacts == null ||mContactAdapter == null){
             return;
         }
-        else if(newSongs.length == 0){
-            TextView t = (TextView) mFragmentRoot.findViewById(R.id.musicTextViewNoContent);
-            t.setVisibility(View.VISIBLE);
-            t.setText(R.string.text_music_no_content);
+        else if(newContacts.length == 0){
+            //TextView t = (TextView) mFragmentRoot.findViewById(R.id.contactsTextViewNoContent);
+            //t.setVisibility(View.VISIBLE);
+            //t.setText(R.string.text_contacts_no_content);
+            return;
         }
+        //mFragmentRoot.findViewById(R.id.contactsTextViewNoContent).setVisibility(View.INVISIBLE);
 
-        ListIterator<Contact> it = Arrays.asList(newSongs).listIterator();
+        // Convert the array to a dynamic list
+        ListIterator<Contact> it = Arrays.asList(newContacts).listIterator();
+
+        mContactAdapter.clear();
 
         while(it.hasNext()){
             Contact c = it.next();
@@ -107,8 +110,8 @@ public class ContactsFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnMusicInteraction) {
-            mListener = (OnMusicInteraction) context;
+        if (context instanceof OnContactsInteraction) {
+            mListener = (OnContactsInteraction) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnMusicInteraction");
@@ -138,7 +141,7 @@ public class ContactsFragment extends Fragment {
 
     public class ContactListAdapter extends ArrayAdapter<Contact> {
         public ContactListAdapter(Context context, List<Contact> elements){
-            super(context, R.layout.song_list_item, elements);
+            super(context, R.layout.contact_list_item, elements);
         }
 
         @Override
@@ -146,13 +149,13 @@ public class ContactsFragment extends Fragment {
             Contact c = getItem(position);
 
             if(convertView == null){
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.song_list_item, parent);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.contact_list_item, parent);
             }
 
             TextView title = (TextView) convertView.findViewById(R.id.list_item_title);
             TextView content = (TextView) convertView.findViewById(R.id.list_item_content);
-            title.setText(s.getTitle());
-            title.setText(s.getAlbum());
+            title.setText(c.getName());
+            title.setText(c.getPhoneNumber());
 
             return convertView;
         }

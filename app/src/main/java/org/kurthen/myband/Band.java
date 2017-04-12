@@ -2,6 +2,7 @@ package org.kurthen.myband;
 
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.text.TextUtils;
 
 /**
  * Created by Leonhard on 12.09.2016.
@@ -13,14 +14,14 @@ public class Band {
     private float transactionSum;
 
     private Drawable pictureThumbnail;
+    private String pictureHash;
     private Drawable pictureFullscreen;
 
     private User[] members;
-    private Setlist[] setlists;
-    private Song[] songs;
     private Event[] events;
     private Transaction[] transactions;
     private Update[] updates;
+    private Contact[] contacts;
 
     public int getId(){
         return id;
@@ -46,12 +47,8 @@ public class Band {
         this.pictureThumbnail = picture;
     }
 
-    public Setlist[] getSetlists() {
-        return setlists;
-    }
-
-    public void setSetlists(Setlist[] setlists) {
-        this.setlists = setlists;
+    public boolean comparePictureHash(String hash){
+        return TextUtils.equals(pictureHash, hash);
     }
 
     public String getName() {
@@ -70,12 +67,12 @@ public class Band {
         this.transactionSum = transactionSum;
     }
 
-    public Song[] getSongs() {
-        return songs;
+    public Contact[] getContacts() {
+        return contacts;
     }
 
-    public void setSongs(Song[] songs) {
-        this.songs = songs;
+    public void setSongs(Contact[] songs) {
+        this.contacts = songs;
     }
 
     public Transaction[] getTransactions() {

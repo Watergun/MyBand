@@ -355,7 +355,7 @@ public class AuthenticationActivity extends AppCompatActivity implements
     }
 
     /**
-     * Represents an asynchronous login/registration task used to authenticate
+     * Represents an asynchronous login task used to authenticate
      * the user.
      */
 
@@ -376,29 +376,37 @@ public class AuthenticationActivity extends AppCompatActivity implements
             mCredentials = AccountSecurity.logCredentials(mEmail, mPassword);
 
             //Ask the database if the information is correct
-            String answer = NetworkAccess.performPostRequest("login.php",
-                    "email=" + mCredentials[0] + "?pw=" + mCredentials[1]);
+            String answer = NetworkAccess.performPostRequest("log_user.php",
+                    "email=" + mCredentials[0] + "&pw=" + mCredentials[1]);
 
             return answer;
         }
 
         @Override
         protected void onPostExecute(final String status) {
-            if(TextUtils.equals(status, "No such email")) {
+            if(TextUtils.equals(status, "Unknown email")) {
                 Log.d("STATUS", "Login failed");
                 showProgress(false);
                 EditText emailEntry = (EditText) findViewById(R.id.emailEntryLogin);
                 emailEntry.setError("Email nicht registriert");
                 emailEntry.requestFocus();
-            }else if(TextUtils.equals(status, "Wrong password")){
+            }else if(TextUtils.equals(status, "Incorrect password")){
                 Log.d("STATUS", "Login failed");
                 showProgress(false);
                 EditText passwordEntry = (EditText) findViewById(R.id.passwordEntryLogin);
                 passwordEntry.setError("Inkorrekt");
                 passwordEntry.requestFocus();
             }
-            else if(TextUtils.equals(status, "Login successful")){
+            else if(status.startsWith("Success-")){
                 Log.d("STATUS", "Logged in successfully");
+
+                if(status.split("-").length != 2){
+                    Log.d("STATUS", "Unexpected response format");
+                    showProgress(false);
+                    return;
+                }
+                String token = status.split("-")[1];
+                Log.d("PREFS", "Received authentication token: " + token);
 
                 //Set current user as local default user
                 SharedPreferences localStatus = getSharedPreferences("local_instance", MODE_PRIVATE);
@@ -406,14 +414,20 @@ public class AuthenticationActivity extends AppCompatActivity implements
                 editor.putBoolean(getString(R.string.local_toggle), true);
                 editor.putString(getString(R.string.local_key), mCredentials[0]);
                 editor.putString("password", mCredentials[1]);
+                editor.putString("token", token);
                 editor.commit();
 
                 CurrentProfile.getInstance().setUserCredentials(mCredentials[0], mCredentials[1]);
+                CurrentProfile.getInstance().setAuthToken(token);
 
                 //Switch to the HomeActivity
                 Intent homeIntent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(homeIntent);
                 finish();
+            }
+            else{
+                showProgress(false);
+                Log.d("STATUS", "Unexpexted server response");
             }
         }
 
@@ -442,7 +456,7 @@ public class AuthenticationActivity extends AppCompatActivity implements
 
             // Post user data on server
             String answer = NetworkAccess.performPostRequest("registration.php",
-                    "email=" + mCredentials[0] + "?pw=" + mCredentials[1]);
+                    "name=" + mName + "&email=" + mCredentials[0] + "&pw=" + mCredentials[1]);
 
             return answer;
         }
@@ -455,8 +469,16 @@ public class AuthenticationActivity extends AppCompatActivity implements
                 emailEntry.setError("Email already in use");
                 emailEntry.requestFocus();
             }
-            else if(TextUtils.equals(status, "Success")) {
+            else if(status.startsWith("Success")) {
                 Log.d("STATUS", "Registered successfully");
+
+                //Receive authentication token
+                if(status.split("-").length != 2){
+                    Log.d("ERROR", "Invalid success response in registration communication");
+                    return;
+                }
+
+                String token = status.split("-")[1];
 
                 //Set current user as local default user
                 SharedPreferences localStatus = getSharedPreferences("local_instance", MODE_PRIVATE);
@@ -464,10 +486,12 @@ public class AuthenticationActivity extends AppCompatActivity implements
                 editor.putBoolean(getString(R.string.local_toggle), true);
                 editor.putString(getString(R.string.local_key), mCredentials[0]);
                 editor.putString("password", mCredentials[1]);
+                editor.putString("token", token);
                 editor.commit();
 
                 //Save user information in class
                 CurrentProfile.getInstance().setUserCredentials(mName, mCredentials[0], mCredentials[1]);
+                CurrentProfile.getInstance().setAuthToken(token);
 
                 //Switch to the HomeActivity
                 Intent homeIntent = new Intent(getApplicationContext(), HomeActivity.class);

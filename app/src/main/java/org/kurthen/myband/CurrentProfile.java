@@ -16,6 +16,7 @@ public class CurrentProfile {
 
     private User user = new User();
     private int selectedBand = -1;
+    private String authToken = "None";
 
     public User getUser() {
         return user;
@@ -35,8 +36,17 @@ public class CurrentProfile {
         user.setEmail(newUser.getEmail());
         user.setPassword(newUser.getPassword());
         user.setBands(newUser.getBands());
-        user.setInstruments(newUser.getInstruments());
+
+        //user.setInstruments(newUser.getInstruments());
         user.setPictureThumbnail(newUser.getPictureThumbnail());
+    }
+
+    public void setAuthToken(String newToken) {
+        authToken = newToken;
+    }
+
+    public String getToken(){
+        return authToken;
     }
 
     public void resetUser(){
@@ -59,6 +69,10 @@ public class CurrentProfile {
             return user.getBands()[selectedBand];
         else
             return null;
+    }
+
+    public int getSelectedBandIndex(){
+        return selectedBand;
     }
 
     public Update[] getUpdates(){
@@ -85,10 +99,10 @@ public class CurrentProfile {
             return null;
     }
 
-    public Song[] getSongs(){
+    public Contact[] getContacts(){
         Band b = getSelectedBand();
         if(b != null)
-            return b.getSongs();
+            return b.getContacts();
         else
             return null;
     }
