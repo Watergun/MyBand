@@ -1,5 +1,5 @@
 //
-//  SecondViewController.swift
+//  CalendarViewController.swift
 //  MyBand
 //
 //  Created by Mac User on 09.01.17.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SecondViewController: UIViewController {
+class CalendarViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

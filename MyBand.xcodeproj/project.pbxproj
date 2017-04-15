@@ -7,9 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6329DD6F1E9FD34C004041EA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6329DD6E1E9FD34C004041EA /* Images.xcassets */; };
+		6329DD711E9FD5D1004041EA /* FinancesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6329DD701E9FD5D1004041EA /* FinancesViewController.swift */; };
 		63F887F91E23035C008CB04F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F887F81E23035C008CB04F /* AppDelegate.swift */; };
-		63F887FB1E23035C008CB04F /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F887FA1E23035C008CB04F /* FirstViewController.swift */; };
-		63F887FD1E23035C008CB04F /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F887FC1E23035C008CB04F /* SecondViewController.swift */; };
+		63F887FB1E23035C008CB04F /* NewsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F887FA1E23035C008CB04F /* NewsViewController.swift */; };
+		63F887FD1E23035C008CB04F /* CalendarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F887FC1E23035C008CB04F /* CalendarViewController.swift */; };
 		63F888001E23035D008CB04F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63F887FE1E23035D008CB04F /* Main.storyboard */; };
 		63F888021E23035D008CB04F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63F888011E23035D008CB04F /* Assets.xcassets */; };
 		63F888051E23035D008CB04F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63F888031E23035D008CB04F /* LaunchScreen.storyboard */; };
@@ -35,10 +37,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6329DD6E1E9FD34C004041EA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		6329DD701E9FD5D1004041EA /* FinancesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FinancesViewController.swift; sourceTree = "<group>"; };
 		63F887F51E23035C008CB04F /* MyBand.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyBand.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63F887F81E23035C008CB04F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		63F887FA1E23035C008CB04F /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
-		63F887FC1E23035C008CB04F /* SecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
+		63F887FA1E23035C008CB04F /* NewsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsViewController.swift; sourceTree = "<group>"; };
+		63F887FC1E23035C008CB04F /* CalendarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewController.swift; sourceTree = "<group>"; };
 		63F887FF1E23035D008CB04F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		63F888011E23035D008CB04F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		63F888041E23035D008CB04F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -100,12 +104,14 @@
 			isa = PBXGroup;
 			children = (
 				63F887F81E23035C008CB04F /* AppDelegate.swift */,
-				63F887FA1E23035C008CB04F /* FirstViewController.swift */,
-				63F887FC1E23035C008CB04F /* SecondViewController.swift */,
+				63F887FA1E23035C008CB04F /* NewsViewController.swift */,
+				63F887FC1E23035C008CB04F /* CalendarViewController.swift */,
 				63F887FE1E23035D008CB04F /* Main.storyboard */,
 				63F888011E23035D008CB04F /* Assets.xcassets */,
 				63F888031E23035D008CB04F /* LaunchScreen.storyboard */,
 				63F888061E23035D008CB04F /* Info.plist */,
+				6329DD6E1E9FD34C004041EA /* Images.xcassets */,
+				6329DD701E9FD5D1004041EA /* FinancesViewController.swift */,
 			);
 			path = MyBand;
 			sourceTree = "<group>";
@@ -196,6 +202,7 @@
 				TargetAttributes = {
 					63F887F41E23035C008CB04F = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 83LWS8HB8V;
 						ProvisioningStyle = Automatic;
 					};
 					63F8880A1E23035D008CB04F = {
@@ -236,6 +243,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				63F888051E23035D008CB04F /* LaunchScreen.storyboard in Resources */,
+				6329DD6F1E9FD34C004041EA /* Images.xcassets in Resources */,
 				63F888021E23035D008CB04F /* Assets.xcassets in Resources */,
 				63F888001E23035D008CB04F /* Main.storyboard in Resources */,
 			);
@@ -262,9 +270,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63F887FD1E23035C008CB04F /* SecondViewController.swift in Sources */,
+				63F887FD1E23035C008CB04F /* CalendarViewController.swift in Sources */,
+				6329DD711E9FD5D1004041EA /* FinancesViewController.swift in Sources */,
 				63F887F91E23035C008CB04F /* AppDelegate.swift in Sources */,
-				63F887FB1E23035C008CB04F /* FirstViewController.swift in Sources */,
+				63F887FB1E23035C008CB04F /* NewsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -416,7 +425,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				DEVELOPMENT_TEAM = 83LWS8HB8V;
 				INFOPLIST_FILE = MyBand/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.myband.MyBand;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -428,7 +440,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				DEVELOPMENT_TEAM = 83LWS8HB8V;
 				INFOPLIST_FILE = MyBand/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.myband.MyBand;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -509,6 +524,7 @@
 				63F888211E23035D008CB04F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		63F888221E23035D008CB04F /* Build configuration list for PBXNativeTarget "MyBandTests" */ = {
 			isa = XCConfigurationList;
@@ -517,6 +533,7 @@
 				63F888241E23035D008CB04F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		63F888251E23035D008CB04F /* Build configuration list for PBXNativeTarget "MyBandUITests" */ = {
 			isa = XCConfigurationList;
@@ -525,6 +542,7 @@
 				63F888271E23035D008CB04F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

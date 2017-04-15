@@ -1,5 +1,5 @@
 //
-//  FirstViewController.swift
+//  NewsViewController.swift
 //  MyBand
 //
 //  Created by Mac User on 09.01.17.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class FirstViewController: UIViewController {
+class NewsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

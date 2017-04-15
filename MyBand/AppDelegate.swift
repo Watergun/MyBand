@@ -4,7 +4,6 @@
 //
 //  Created by Mac User on 09.01.17.
 //  Copyright © 2017 MyBand Project. All rights reserved.
-//
 
 import UIKit
 
